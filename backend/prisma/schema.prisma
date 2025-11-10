@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// generator client {
+//   provider = "prisma-client"
+//   output   = "../generated/prisma"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Route {
+  id               Int      @id @default(autoincrement())
+  route_id         String   @unique
+  vessel_type      String
+  fuel_type        String
+  year             Int
+  ghg_intensity    Float
+  fuel_consumption Float
+  distance         Float
+  total_emissions  Float
+  is_baseline      Boolean  @default(false)
+}
+
+model ShipCompliance {
+  id         Int     @id @default(autoincrement())
+  ship_id    String
+  year       Int
+  cb_gco2eq  Float
+}
+
+model BankEntry {
+  id            Int     @id @default(autoincrement())
+  ship_id       String
+  year          Int
+  amount_gco2eq Float
+}
+
+model Pool {
+  id         Int       @id @default(autoincrement())
+  year       Int
+  created_at DateTime  @default(now())
+  members    PoolMember[]
+}
+
+model PoolMember {
+  id         Int    @id @default(autoincrement())
+  pool_id    Int
+  ship_id    String
+  cb_before  Float
+  cb_after   Float
+  pool       Pool   @relation(fields: [pool_id], references: [id])
+}
